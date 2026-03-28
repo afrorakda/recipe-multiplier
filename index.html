@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Recipe Multiplier - Fridge Combo</title>
+    <style>
+        :root {
+            --bg: #fff;
+            --main: #333;
+            --accent: #eee;
+            --input-bg: #fafafa;
+            --radius: 15px;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            flex: 1;
+            padding: 20px;
+            max-width: 420px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header { margin-bottom: 20px; }
+        h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; }
+
+        textarea {
+            width: 100%;
+            height: 250px;
+            background: var(--input-bg);
+            border: 1px solid var(--accent);
+            border-radius: var(--radius);
+            padding: 15px;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: var(--main);
+            outline: none;
+            resize: none;
+            -webkit-appearance: none;
+            -webkit-text-fill-color: var(--main);
+            opacity: 1 !important;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .custom-ratio {
+            grid-column: span 4;
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        input[type="number"] {
+            flex: 1;
+            background: var(--input-bg);
+            border: 1px solid var(--accent);
+            border-radius: var(--radius);
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-align: center;
+            outline: none;
+            -webkit-appearance: none;
+            -webkit-text-fill-color: var(--main);
+            opacity: 1 !important;
+        }
+
+        button {
+            background: var(--main);
+            color: #fff;
+            border: none;
+            padding: 15px 5px;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        button:active { transform: scale(0.95); }
+        button.action-btn { background: #111; }
+
+        footer {
+            padding: 30px 20px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #aaa;
+        }
+
+        .support-btns {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .kofi-link, .modal-trigger {
+            background: #111;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: var(--radius);
+            font-weight: bold;
+            font-size: 0.8rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Modal */
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            align-items: center; justify-content: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: var(--radius);
+            max-width: 320px;
+            width: 90%;
+            position: relative;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px; right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Recipe Multiplier</h1>
+    </header>
+
+    <textarea id="recipeInput" placeholder="Paste your recipe here...&#10;Example:&#10;Pork 200g&#10;Sugar 1 tsp"></textarea>
+
+    <div class="controls">
+        <button onclick="multiply(0.5)">x0.5</button>
+        <button onclick="multiply(2)">x2</button>
+        <button onclick="multiply(3)">x3</button>
+        <button onclick="multiply(4)">x4</button>
+        
+        <div class="custom-ratio">
+            <input type="number" id="customInput" placeholder="Custom" step="0.1">
+            <button class="action-btn" style="flex: 1;" onclick="multiply(document.getElementById('customInput').value)">Apply</button>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="support-btns">
+        <a href="https://ko-fi.com/afrorakda" target="_blank" class="kofi-link">Support on Ko-fi</a>
+        <button class="modal-trigger" onclick="document.getElementById('modal').style.display='flex'">App</button>
+    </div>
+    No login / No tracking / No ads / Browser only<br>
+    Privacy Policy / afrorakda © 2026
+</footer>
+
+<div id="modal" onclick="this.style.display='none'">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <span class="close-btn" onclick="document.getElementById('modal').style.display='none'">&times;</span>
+        <h3 style="margin-top:0">Install App</h3>
+        <p style="font-size: 0.9rem; color: #666;">Add to home screen.</p>
+        <div style="font-size: 0.85rem; line-height: 1.6;">
+            <p>🍏 <strong>iPhone:</strong> Share > Add to Home Screen</p>
+            <p>🤖 <strong>Android:</strong> Menu > Add to Home Screen</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function multiply(ratio) {
+        const r = parseFloat(ratio);
+        if (isNaN(r) || r <= 0) return;
+
+        const textarea = document.getElementById('recipeInput');
+        const text = textarea.value;
+        
+        // 数字（整数、小数、分数的なスラッシュは一旦保留しシンプルに）をターゲットに
+        // 前後に文字があっても数字部分だけを置換
+        const result = text.replace(/(\d+(\.\d+)?)/g, function(match) {
+            const num = parseFloat(match);
+            const calculated = num * r;
+            // 小数点第2位までに丸める（0.5倍などで端数が出るため）
+            return Math.round(calculated * 100) / 100;
+        });
+
+        textarea.value = result;
+    }
+</script>
+
+</body>
+</html>

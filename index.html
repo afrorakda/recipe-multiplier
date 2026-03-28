@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Recipe Multiplier - Fridge Combo</title>
+    
+    <link rel="apple-touch-icon" href="image_36.png">
+    <link rel="icon" type="image/png" href="image_36.png">
+
     <style>
-        :root { --bg: #fff; --main: #333; --accent: #eee; --input-bg: #fafafa; --radius: 15px; }
+        :root { --bg: #fff; --main: #333; --accent: #eee; --input-bg: #fafafa; --radius: 15px; --clear-gray: #bbb; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body { background-color: var(--bg); color: var(--main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; flex-direction: column; min-height: 100vh; }
         
@@ -14,6 +18,7 @@
         h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; }
         .subtitle { font-size: 0.85rem; color: #666; font-weight: 500; margin-top: 4px; }
 
+        /* 入力エリアの構造維持 */
         .input-area { position: relative; width: 100%; margin-top: 10px; }
         textarea {
             width: 100%; height: 250px; background: var(--input-bg); border: 1px solid var(--accent); border-radius: var(--radius);
@@ -25,35 +30,34 @@
             border: none; padding: 6px 15px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; cursor: pointer;
         }
 
+        /* 35番のグリッド構造を参照し、Goボタンを大きく配置 */
         .controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
-        .custom-row { grid-column: span 4; display: flex; gap: 8px; margin-top: 5px; align-items: stretch; }
+        .custom-row { grid-column: span 4; display: flex; gap: 8px; margin-top: 5px; align-items: stretch; height: 54px; }
 
         input[type="number"] {
-            flex: 2; background: var(--input-bg); border: 1px solid var(--accent); border-radius: var(--radius);
-            padding: 12px; font-size: 1rem; text-align: center; outline: none; font-weight: bold;
+            flex: 2.2; background: var(--input-bg); border: 1px solid var(--accent); border-radius: var(--radius);
+            padding: 0 10px; font-size: 1rem; text-align: center; outline: none; font-weight: bold;
             -webkit-appearance: none; -webkit-text-fill-color: var(--main); opacity: 1 !important;
         }
         input::placeholder { color: #888; -webkit-text-fill-color: #888; opacity: 1; }
 
-        button {
-            background: var(--main); color: #fff; border: none; padding: 15px 5px; border-radius: var(--radius);
-            font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: transform 0.1s;
-        }
+        button { background: var(--main); color: #fff; border: none; border-radius: var(--radius); font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: transform 0.1s; }
         button:active { transform: scale(0.95); }
         
-        .clear-custom { background: var(--accent); color: var(--main); padding: 0 15px; flex: 1; font-size: 0.8rem; }
-        .go-btn { background: #111; flex: 2; font-size: 1.1rem; }
+        /* 視認性のための#bbb、主役の#333大ボタン */
+        .clear-custom { background: var(--clear-gray); color: var(--main); flex: 1.2; font-size: 0.8rem; }
+        .go-btn { background: var(--main); flex: 1.8; font-size: 1.2rem; }
 
+        /* 35番のfooter-btns構造を完全参照 */
         .footer-btns { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 20px 0; margin-top: auto; }
-        .kofi-btn, .home-btn { 
-            display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 320px;
-            padding: 12px 20px; border-radius: var(--radius); font-weight: bold; font-size: 0.85rem; text-decoration: none; border: none; cursor: pointer;
-        }
+        .kofi-btn, .home-btn { display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 320px; padding: 12px 20px; border-radius: var(--radius); font-weight: bold; font-size: 0.85rem; text-decoration: none; border: none; cursor: pointer; }
         .kofi-btn { background: var(--main); color: #fff; }
         .home-btn { background: var(--accent); color: var(--main); }
 
+        /* フッター記載事項：完全復元 */
         footer { padding-bottom: 30px; text-align: center; font-size: 0.75rem; color: #aaa; line-height: 1.6; }
 
+        /* 35番のモーダル構造を参照 */
         #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100; }
         .modal-content { background: #fff; padding: 30px; border-radius: var(--radius); max-width: 320px; width: 90%; position: relative; }
         .close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #aaa; cursor: pointer; padding: 5px; line-height: 1; border: none; background: none; }
@@ -63,7 +67,7 @@
 
 <div class="container">
     <header>
-        <h1>Recipe Multiplier</h1>
+        <h1>#36 Recipe Multiplier</h1>
         <p class="subtitle">Scale your recipe portions instantly.</p>
     </header>
 
@@ -110,45 +114,26 @@
 
 <script>
     let originalText = "";
-
-    function handleInput() {
-        originalText = document.getElementById('recipeInput').value;
-    }
-
-    function clearRecipe() {
-        document.getElementById('recipeInput').value = "";
-        originalText = "";
-    }
-
-    function clearCustom() {
-        document.getElementById('customInput').value = "";
-    }
+    function handleInput() { originalText = document.getElementById('recipeInput').value; }
+    function clearRecipe() { document.getElementById('recipeInput').value = ""; originalText = ""; }
+    function clearCustom() { document.getElementById('customInput').value = ""; }
 
     function multiply(ratio) {
         const r = parseFloat(ratio);
         if (isNaN(r) || r <= 0) return;
-
         if (!originalText) {
             originalText = document.getElementById('recipeInput').value;
             if (!originalText) return;
         }
-
-        // 1. 分数形式 (n/m) を探し、分子だけに掛けるロジック
-        // 2. その後、単独の数字を置換
+        // 分子のみに掛けるロジックを正確に維持
         let result = originalText.replace(/(\d+)\/(\d+)/g, function(match, p1, p2) {
             const num = parseFloat(p1) * r;
-            const rounded = Math.round(num * 100) / 100;
-            return rounded + "/" + p2;
+            return Math.round(num * 100) / 100 + "/" + p2;
         });
-
-        // 分数の一部になっていない独立した数字を置換
-        // (?!\/) は「直後に / がない」、(?<!\/) は「直前に / がない」
         result = result.replace(/(?<!\/)\b(\d+(\.\d+)?)\b(?!\/)/g, function(match) {
             const num = parseFloat(match);
-            const calculated = num * r;
-            return Math.round(calculated * 100) / 100;
+            return Math.round(num * r * 100) / 100;
         });
-
         document.getElementById('recipeInput').value = result;
     }
 </script>

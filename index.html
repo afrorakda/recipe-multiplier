@@ -2,34 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Recipe Multiplier - Fridge Combo</title>
     <style>
         :root { --bg: #fff; --main: #333; --accent: #eee; --input-bg: #fafafa; --radius: 15px; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg); color: var(--main); display: flex; flex-direction: column; min-height: 100vh; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        body { background-color: var(--bg); color: var(--main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; flex-direction: column; min-height: 100vh; }
         
         .container { flex: 1; padding: 20px; max-width: 420px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; }
         header { margin-bottom: 20px; }
-        h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; margin: 0; }
+        h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; }
         .subtitle { font-size: 0.85rem; color: #666; font-weight: 500; margin-top: 4px; }
 
-        .input-area { position: relative; width: 100%; }
+        .input-area { position: relative; width: 100%; margin-top: 10px; }
         textarea {
             width: 100%; height: 250px; background: var(--input-bg); border: 1px solid var(--accent); border-radius: var(--radius);
             padding: 15px; font-size: 1rem; line-height: 1.5; color: var(--main); outline: none; resize: none;
             -webkit-appearance: none; -webkit-text-fill-color: var(--main); opacity: 1 !important;
         }
-        .clear-btn-small {
-            position: absolute; bottom: 10px; right: 10px; background: var(--accent); color: var(--main);
-            border: none; padding: 5px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; cursor: pointer;
+        .clear-recipe {
+            display: block; width: fit-content; margin: 8px 0 0 auto; background: var(--accent); color: var(--main);
+            border: none; padding: 6px 15px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; cursor: pointer;
         }
 
-        .controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; }
-        .custom-row { grid-column: span 4; display: flex; gap: 8px; margin-top: 5px; }
+        .controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
+        .custom-row { grid-column: span 4; display: flex; gap: 8px; margin-top: 5px; align-items: stretch; }
 
         input[type="number"] {
-            flex: 1; background: var(--input-bg); border: 1px solid var(--accent); border-radius: var(--radius);
+            flex: 2; background: var(--input-bg); border: 1px solid var(--accent); border-radius: var(--radius);
             padding: 12px; font-size: 1rem; text-align: center; outline: none; font-weight: bold;
             -webkit-appearance: none; -webkit-text-fill-color: var(--main); opacity: 1 !important;
         }
@@ -40,10 +40,11 @@
             font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: transform 0.1s;
         }
         button:active { transform: scale(0.95); }
-        .go-btn { background: #111; flex: 1.5; }
-        .clear-mini { background: var(--accent); color: var(--main); padding: 0 15px; }
+        
+        .clear-custom { background: var(--accent); color: var(--main); padding: 0 15px; flex: 1; font-size: 0.8rem; }
+        .go-btn { background: #111; flex: 2; font-size: 1.1rem; }
 
-        .footer-btns { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 20px 0; }
+        .footer-btns { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 20px 0; margin-top: auto; }
         .kofi-btn, .home-btn { 
             display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 320px;
             padding: 12px 20px; border-radius: var(--radius); font-weight: bold; font-size: 0.85rem; text-decoration: none; border: none; cursor: pointer;
@@ -68,7 +69,7 @@
 
     <div class="input-area">
         <textarea id="recipeInput" placeholder="Paste recipe here..." oninput="handleInput()"></textarea>
-        <button class="clear-btn-small" onclick="clearRecipe()">Clear</button>
+        <button class="clear-recipe" onclick="clearRecipe()">Clear Recipe</button>
     </div>
 
     <div class="controls">
@@ -78,8 +79,8 @@
         <button onclick="multiply(4)">x4</button>
         
         <div class="custom-row">
-            <input type="number" id="customInput" placeholder="ex) 1.5, 2.5" step="0.1" inputmode="decimal">
-            <button class="clear-mini" onclick="clearCustom()">Clear</button>
+            <input type="number" id="customInput" placeholder="ex) 1.5" step="0.1" inputmode="decimal">
+            <button class="clear-custom" onclick="clearCustom()">Clear</button>
             <button class="go-btn" onclick="multiply(document.getElementById('customInput').value)">Go</button>
         </div>
     </div>
@@ -132,7 +133,17 @@
             if (!originalText) return;
         }
 
-        const result = originalText.replace(/(\d+(\.\d+)?)/g, function(match) {
+        // 1. 分数形式 (n/m) を探し、分子だけに掛けるロジック
+        // 2. その後、単独の数字を置換
+        let result = originalText.replace(/(\d+)\/(\d+)/g, function(match, p1, p2) {
+            const num = parseFloat(p1) * r;
+            const rounded = Math.round(num * 100) / 100;
+            return rounded + "/" + p2;
+        });
+
+        // 分数の一部になっていない独立した数字を置換
+        // (?!\/) は「直後に / がない」、(?<!\/) は「直前に / がない」
+        result = result.replace(/(?<!\/)\b(\d+(\.\d+)?)\b(?!\/)/g, function(match) {
             const num = parseFloat(match);
             const calculated = num * r;
             return Math.round(calculated * 100) / 100;

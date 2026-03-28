@@ -4,21 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Recipe Multiplier - Fridge Combo</title>
-    
     <link rel="apple-touch-icon" href="image_36.png">
     <link rel="icon" type="image/png" href="image_36.png">
-
     <style>
         :root { --bg: #fff; --main: #333; --accent: #eee; --input-bg: #fafafa; --radius: 15px; --clear-gray: #bbb; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body { background-color: var(--bg); color: var(--main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; flex-direction: column; min-height: 100vh; }
-        
         .container { flex: 1; padding: 20px; max-width: 420px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; }
         header { margin-bottom: 20px; }
-        h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; }
-        .subtitle { font-size: 0.85rem; color: #666; font-weight: 500; margin-top: 4px; }
+        h1 { font-size: 1.5rem; font-weight: 800; }
+        .subtitle { font-size: 0.85rem; color: #666; margin-top: 4px; }
 
-        .input-area { position: relative; width: 100%; margin-top: 10px; }
+        /* 15:48のレイアウトを完全参照 */
         textarea {
             width: 100%; height: 250px; background: var(--input-bg); border: 1px solid var(--accent); border-radius: var(--radius);
             padding: 15px; font-size: 1rem; line-height: 1.5; color: var(--main); outline: none; resize: none;
@@ -26,59 +23,40 @@
         }
         .clear-recipe {
             display: block; width: fit-content; margin: 8px 0 0 auto; background: var(--accent); color: var(--main);
-            border: none; padding: 6px 15px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; cursor: pointer;
+            border: none; padding: 8px 16px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; cursor: pointer;
         }
 
-        /* 18:00の画像を参照：4列グリッドを維持 */
         .controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
-        
-        /* 修正箇所：高さをTabata基準の54pxにし、Goボタンを大きく */
-        .custom-row { grid-column: span 4; display: flex; gap: 8px; margin-top: 5px; align-items: stretch; height: 54px; }
+        .custom-row { grid-column: span 4; display: flex; gap: 10px; margin-top: 5px; align-items: stretch; height: 54px; }
 
         input[type="number"] {
-            flex: 2; background: var(--input-bg); border: 1px solid var(--accent); border-radius: var(--radius);
-            padding: 0 10px; font-size: 1rem; text-align: center; outline: none; font-weight: bold;
+            flex: 1; background: var(--input-bg); border: 1px solid var(--accent); border-radius: var(--radius);
+            padding: 0 15px; font-size: 1.1rem; text-align: center; outline: none; font-weight: bold;
             -webkit-appearance: none; -webkit-text-fill-color: var(--main); opacity: 1 !important;
         }
-        input::placeholder { color: #888; -webkit-text-fill-color: #888; opacity: 1; }
 
-        button { background: var(--main); color: #fff; border: none; border-radius: var(--radius); font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: transform 0.1s; }
-        button:active { transform: scale(0.95); }
-        
-        .clear-custom { background: var(--clear-gray); color: var(--main); flex: 1.2; font-size: 0.8rem; }
-        .go-btn { background: var(--main); flex: 1.8; font-size: 1.2rem; }
+        button { background: var(--main); color: #fff; border: none; border-radius: var(--radius); font-size: 1rem; font-weight: bold; cursor: pointer; }
+        .clear-custom { background: var(--clear-gray); color: var(--main); padding: 0 15px; font-size: 0.85rem; }
+        .go-btn { flex: 0 0 80px; }
 
         .footer-btns { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 20px 0; margin-top: auto; }
-        .kofi-btn, .home-btn { display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 320px; padding: 12px 20px; border-radius: var(--radius); font-weight: bold; font-size: 0.85rem; text-decoration: none; border: none; cursor: pointer; }
+        .kofi-btn, .home-btn { display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 320px; padding: 14px; border-radius: var(--radius); font-weight: bold; font-size: 0.9rem; text-decoration: none; }
         .kofi-btn { background: var(--main); color: #fff; }
         .home-btn { background: var(--accent); color: var(--main); }
-
         footer { padding-bottom: 30px; text-align: center; font-size: 0.75rem; color: #aaa; line-height: 1.6; }
-
-        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100; }
-        .modal-content { background: #fff; padding: 30px; border-radius: var(--radius); max-width: 320px; width: 90%; position: relative; }
-        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #aaa; cursor: pointer; padding: 5px; line-height: 1; border: none; background: none; }
     </style>
 </head>
 <body>
-
 <div class="container">
-    <header>
-        <h1>#36 Recipe Multiplier</h1>
-        <p class="subtitle">Scale your recipe portions instantly.</p>
-    </header>
-
-    <div class="input-area">
-        <textarea id="recipeInput" placeholder="Paste recipe here..." oninput="handleInput()"></textarea>
-        <button class="clear-recipe" onclick="clearRecipe()">Clear Recipe</button>
-    </div>
+    <header><h1>#36 Recipe Multiplier</h1><p class="subtitle">Scale your recipe portions instantly.</p></header>
+    <textarea id="recipeInput" placeholder="Paste recipe here..." oninput="handleInput()"></textarea>
+    <button class="clear-recipe" onclick="clearRecipe()">Clear Recipe</button>
 
     <div class="controls">
         <button onclick="multiply(0.5)">x0.5</button>
         <button onclick="multiply(2)">x2</button>
         <button onclick="multiply(3)">x3</button>
         <button onclick="multiply(4)">x4</button>
-        
         <div class="custom-row">
             <input type="number" id="customInput" placeholder="ex) 1.5" step="0.1" inputmode="decimal">
             <button class="clear-custom" onclick="clearCustom()">Clear</button>
@@ -86,54 +64,25 @@
         </div>
     </div>
 </div>
-
 <div class="footer-btns">
     <a href="https://ko-fi.com/afrorakda" target="_blank" class="kofi-btn">Buy me a coffee</a>
-    <button class="home-btn" onclick="document.getElementById('modal').style.display='flex'">Add to Home Screen</button>
+    <button class="home-btn" onclick="alert('Add to Home Screen')">Add to Home Screen</button>
 </div>
-
-<footer>
-    No login / No tracking / No ads / Browser only<br>
-    Privacy Policy / afrorakda © 2026
-</footer>
-
-<div id="modal" onclick="this.style.display='none'">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <span class="close-btn" onclick="document.getElementById('modal').style.display='none'">&times;</span>
-        <h3 style="margin-top:0">Install App</h3>
-        <p style="font-size: 0.9rem; color: #666; margin-bottom: 20px;">Add to home screen.</p>
-        <div style="font-size: 0.85rem; line-height: 1.6;">
-            <p>🍏 <strong>iPhone:</strong> Share > Add to Home Screen</p>
-            <p style="margin-top:10px;">🤖 <strong>Android:</strong> Menu > Add to Home Screen</p>
-        </div>
-    </div>
-</div>
-
+<footer>No login / No tracking / No ads / Browser only<br>Privacy Policy / afrorakda © 2026</footer>
 <script>
     let originalText = "";
     function handleInput() { originalText = document.getElementById('recipeInput').value; }
     function clearRecipe() { document.getElementById('recipeInput').value = ""; originalText = ""; }
     function clearCustom() { document.getElementById('customInput').value = ""; }
-
     function multiply(ratio) {
         const r = parseFloat(ratio);
         if (isNaN(r) || r <= 0) return;
-        if (!originalText) {
-            originalText = document.getElementById('recipeInput').value;
-            if (!originalText) return;
-        }
-        // 話し合った通り、分子に掛けるのみ。約分は行わない。
-        let result = originalText.replace(/(\d+)\/(\d+)/g, function(match, p1, p2) {
-            const num = parseFloat(p1) * r;
-            return Math.round(num * 100) / 100 + "/" + p2;
-        });
-        result = result.replace(/(?<!\/)\b(\d+(\.\d+)?)\b(?!\/)/g, function(match) {
-            const num = parseFloat(match);
-            return Math.round(num * r * 100) / 100;
-        });
+        if (!originalText) originalText = document.getElementById('recipeInput').value;
+        if (!originalText) return;
+        let result = originalText.replace(/(\d+)\/(\d+)/g, (m, p1, p2) => (Math.round(parseFloat(p1) * r * 100) / 100) + "/" + p2);
+        result = result.replace(/(?<!\/)\b(\d+(\.\d+)?)\b(?!\/)/g, (m) => Math.round(parseFloat(m) * r * 100) / 100);
         document.getElementById('recipeInput').value = result;
     }
 </script>
-
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>#36 Recipe Multiplier - Fridge Combo</title>
+    <title>Recipe Multiplier - Fridge Combo</title>
     
     <link rel="apple-touch-icon" href="image_36.png">
     <link rel="icon" type="image/png" href="image_36.png">
@@ -39,11 +39,9 @@
             border: none; padding: 6px 15px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; cursor: pointer; 
         }
 
-        /* 18:00準拠：4列の肉厚なボタン */
         .controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
         .controls button { height: 54px; }
 
-        /* カスタム行：入力窓内×とGoボタンのみ */
         .custom-row { grid-column: span 4; display: flex; gap: 10px; margin-top: 5px; align-items: stretch; height: 54px; }
         
         .input-wrapper { position: relative; flex: 2.5; display: flex; align-items: center; }
@@ -52,6 +50,10 @@
             padding: 0 40px 0 15px; font-size: 1.1rem; text-align: center; outline: none; font-weight: bold;
             -webkit-appearance: none; -webkit-text-fill-color: var(--main); opacity: 1 !important;
         }
+
+        /* 修正：プレースホルダーの濃度を下げて「透かし」らしく */
+        input::placeholder { color: #888; -webkit-text-fill-color: #888; opacity: 0.4; }
+
         .inner-clear { 
             position: absolute; right: 12px; color: #bbb; font-size: 1.4rem; cursor: pointer; 
             padding: 5px; user-select: none; line-height: 1;
@@ -71,7 +73,6 @@
 
         footer { padding-bottom: 30px; text-align: center; font-size: 0.75rem; color: #bbb; line-height: 1.6; }
 
-        /* Modal: #35 Tabata完全準拠 */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
         .modal-content { background: #fff; padding: 30px; border-radius: 20px; max-width: 320px; width: 90%; position: relative; text-align: left; }
         .modal-title-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-size: 1.2rem; font-weight: 800; }
@@ -82,7 +83,7 @@
 
 <div class="container">
     <header>
-        <h1>#36 Recipe Multiplier</h1>
+        <h1>Recipe Multiplier</h1>
         <p class="subtitle">Scale your recipe portions instantly.</p>
     </header>
 
@@ -142,15 +143,20 @@
             originalText = document.getElementById('recipeInput').value;
             if (!originalText) return;
         }
-        // 話し合った通り、分子のみに乗算（約分なし）
-        let result = originalText.replace(/(\d+)\/(\d+)/g, function(match, p1, p2) {
+        
+        // 1. 分数の分子のみ計算
+        let result = originalText.replace(/(\d+(\.\d+)?)\/(\d+)/g, function(match, p1, p2, p3) {
             const num = parseFloat(p1) * r;
-            return Math.round(num * 100) / 100 + "/" + p2;
+            return Math.round(num * 100) / 100 + "/" + p3;
         });
-        result = result.replace(/(?<!\/)\b(\d+(\.\d+)?)\b(?!\/)/g, function(match) {
+        
+        // 2. 単位（g, ml等）が直結している数字も計算対象にする修正版ロジック
+        // 分母を避けるため、直前に / がなく、直後に / も数字も点もない場所を探す
+        result = result.replace(/(?<!\/)\b(\d+(\.\d+)?)(?![0-9.\/])/g, function(match) {
             const num = parseFloat(match);
             return Math.round(num * r * 100) / 100;
         });
+        
         document.getElementById('recipeInput').value = result;
     }
 

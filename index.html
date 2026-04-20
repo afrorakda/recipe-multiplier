@@ -28,12 +28,12 @@
             text-decoration: none; font-size: 0.8rem; font-weight: 800; color: var(--main);
             background: var(--accent); padding: 8px 14px; border-radius: 12px;
         }
-        .subtitle { font-size: 0.85rem; color: #999; font-weight: 700; margin-bottom: 20px; text-align: left; }
+        .subtitle { font-size: 0.85rem; color: #999; font-weight: 700; margin-bottom: 25px; text-align: left; }
 
-        .input-area { position: relative; width: 100%; margin-bottom: 12px; }
+        .input-area { position: relative; width: 100%; margin-bottom: 20px; }
         textarea {
-            width: 100%; height: 280px; background: var(--input-bg); border: 2px solid var(--accent); border-radius: var(--radius);
-            padding: 15px 45px 15px 15px; font-size: 1.05rem; font-weight: 700; line-height: 1.6; color: var(--main); outline: none; resize: none;
+            width: 100%; height: 260px; background: var(--input-bg); border: 2px solid var(--accent); border-radius: var(--radius);
+            padding: 15px 45px 15px 15px; font-size: 1rem; font-weight: 700; line-height: 1.6; color: var(--main); outline: none; resize: none;
             -webkit-appearance: none; -webkit-text-fill-color: var(--main); opacity: 1 !important;
             transition: background-color 0.4s ease;
         }
@@ -47,18 +47,18 @@
             align-items: center; justify-content: center; z-index: 2;
         }
 
-        .main-controls { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1.2fr; gap: 8px; margin-bottom: 8px; }
-        .main-controls button { height: 50px; font-size: 0.85rem; }
+        .main-controls { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 12px; }
+        .main-controls button { height: 50px; font-size: 0.8rem; }
         .reset-btn { background: var(--accent) !important; color: var(--main) !important; }
 
-        .custom-row { display: flex; gap: 8px; height: 58px; }
-        .input-wrapper { position: relative; flex: 1; display: flex; align-items: center; }
+        .custom-row { display: flex; gap: 8px; height: 54px; }
+        .input-wrapper { position: relative; flex: 2; display: flex; align-items: center; }
         input[type="number"] {
             width: 100%; height: 100%; background: var(--input-bg); border: 2px solid var(--accent); border-radius: var(--radius);
-            padding: 0 40px 0 15px; font-size: 1.2rem; text-align: center; outline: none; font-weight: 900;
+            padding: 0 40px 0 15px; font-size: 1.1rem; text-align: center; outline: none; font-weight: 900;
             -webkit-appearance: none; -webkit-text-fill-color: var(--main); opacity: 1 !important;
         }
-        input::placeholder { color: #bbb; -webkit-text-fill-color: #bbb; }
+        input::placeholder { color: #bbb; -webkit-text-fill-color: #bbb; font-weight: 700; }
 
         .inner-clear { 
             position: absolute; right: 10px; width: 24px; height: 24px; background: #ddd; color: #fff;
@@ -68,7 +68,7 @@
 
         button { background: var(--main); color: #fff; border: none; border-radius: var(--radius); font-size: 0.9rem; font-weight: 900; cursor: pointer; -webkit-appearance: none; }
         button:active { transform: scale(0.96); }
-        .go-btn { flex: 1.2; font-size: 1.2rem; }
+        .go-btn { flex: 1; font-size: 1.1rem; }
 
         .footer-btns { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 30px 0; margin-top: auto; }
         .kofi-btn, .home-btn { 
@@ -81,7 +81,7 @@
         footer { padding-bottom: 20px; text-align: center; font-size: 0.7rem; color: #bbb; line-height: 1.6; font-weight: 600; }
         footer a { color: inherit; text-decoration: underline; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(4px); }
         .modal-content { background: #fff; padding: 35px; border-radius: var(--radius); max-width: 320px; width: 90%; position: relative; text-align: left; }
         .close-icon { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #ccc; cursor: pointer; font-weight: bold; }
     </style>
@@ -127,15 +127,13 @@
     <a href="https://afrorakda.com/privacy/">Privacy Policy</a> / afrorakda © 2026
 </footer>
 
-<div id="modal" class="modal">
-    <div class="modal-content">
+<div id="modal" class="modal" style="display: none;" onclick="hideModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
         <span class="close-icon" id="closeModal">×</span>
-        <h2 style="margin-bottom: 15px; font-weight: 900;">📱 Install</h2>
-        <p style="margin-bottom: 20px; color: #999; font-size: 0.85rem; font-weight: 700;">Add to home screen.</p>
-        <div style="font-size: 0.9rem; line-height: 1.6; color: var(--main); font-weight: 700;">
-            <p>🍏 <strong>iPhone:</strong> Share > Add to Home Screen</p>
-            <p style="margin-top:10px;">🤖 <strong>Android:</strong> Menu > Add to home screen</p>
-        </div>
+        <h2 style="font-size:1.3rem; font-weight:900; margin-bottom:15px;">📱 Install</h2>
+        <p style="font-size:0.85rem; font-weight:700;">Add to home screen.</p>
+        <p style="font-size:0.85rem; margin-top:15px;">🍏 <strong>iPhone (Safari):</strong><br>Tap Share, then Add to Home Screen.</p>
+        <p style="font-size:0.85rem; margin-top:10px;">🤖 <strong>Android (Chrome):</strong><br>Tap Menu (⋮), then Add to Home Screen.</p>
     </div>
 </div>
 
@@ -184,15 +182,23 @@
         const r = parseFloat(ratio);
         if (isNaN(r) || r <= 0 || !baseRecipe) return;
         
-        // ターゲット単位：日本語・英語・分数をカバー
-        const units = "(g|ml|個|片|枚|カップ|cup|tsp|tbsp|大さじ|小さじ|束|本|切れ|玉|缶|袋|合|丁|パフ|つまみ)";
+        // ターゲット単位：日本語・英語をカバー
+        const units = "(g|ml|個|片|枚|カップ|cup|cups|tsp|tbsp|大さじ|小さじ|束|本|切れ)";
         
-        // 1. 分数の分子のみ計算（単位ターゲット）
-        let result = baseRecipe.replace(new RegExp("(\\d+(\\.\\d+)?)\\/(\\d+)(?=\\s*" + units + ")", "gi"), function(match, p1, p2, p3) {
+        // 1. 混合分数（整数＋分数）への対応 (例: 1 1/2)
+        // 整数の1と、分数の分子1の両方を倍増させるロジック
+        let result = baseRecipe.replace(new RegExp("(\\d+)\\s+(\\d+(\\.\\d+)?)\\/(\\d+)(?=\\s*" + units + ")", "gi"), function(match, whole, num, num_p, den) {
+            const whole_r = formatNum(parseFloat(whole) * r);
+            const num_r = formatNum(parseFloat(num) * r);
+            return whole_r + " " + num_r + "/" + den;
+        });
+        
+        // 2. 分数の分子のみ計算 (例: 1/2) (混合分数で処理されなかったもの)
+        result = result.replace(new RegExp("(?<!\\d\\s+)(\\d+(\\.\\d+)?)\\/(\\d+)(?=\\s*" + units + ")", "gi"), function(match, p1, p2, p3) {
             return formatNum(parseFloat(p1) * r) + "/" + p3;
         });
         
-        // 2. 単位直前の数値（分母回避・ホワイトリスト適合時のみ）
+        // 3. 単位直前の数値 (例: 1個, 1.5tbsp)
         result = result.replace(new RegExp("(?<!\\/)\\b(\\d+(\\.\\d+)?)(?=\\s*" + units + ")", "gi"), function(match) {
             return formatNum(parseFloat(match) * r);
         });

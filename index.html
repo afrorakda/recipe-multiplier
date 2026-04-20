@@ -17,9 +17,10 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
             display: flex; flex-direction: column; min-height: 100vh; 
             -webkit-font-smoothing: antialiased;
+            padding: calc(env(safe-area-inset-top, 20px) + 20px) 20px env(safe-area-inset-bottom, 20px) 20px;
         }
 
-        .container { flex: 1; padding: 20px; max-width: 420px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; }
+        .container { width: 100%; max-width: 420px; margin: 0 auto; flex: 1; display: flex; flex-direction: column; }
         
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         h1 { font-size: 1.6rem; font-weight: 900; letter-spacing: -1.5px; }
@@ -27,12 +28,12 @@
             text-decoration: none; font-size: 0.8rem; font-weight: 800; color: var(--main);
             background: var(--accent); padding: 8px 14px; border-radius: 12px;
         }
-        .subtitle { font-size: 0.85rem; color: #999; font-weight: 700; margin-bottom: 25px; }
+        .subtitle { font-size: 0.85rem; color: #999; font-weight: 700; margin-bottom: 25px; text-align: left; }
 
-        .input-area { position: relative; width: 100%; margin-bottom: 15px; }
+        .input-area { position: relative; width: 100%; margin-bottom: 20px; }
         textarea {
-            width: 100%; height: 250px; background: var(--input-bg); border: 2px solid var(--accent); border-radius: var(--radius);
-            padding: 15px 45px 15px 15px; font-size: 1rem; font-weight: 700; line-height: 1.5; color: var(--main); outline: none; resize: none;
+            width: 100%; height: 260px; background: var(--input-bg); border: 2px solid var(--accent); border-radius: var(--radius);
+            padding: 15px 45px 15px 15px; font-size: 1rem; font-weight: 700; line-height: 1.6; color: var(--main); outline: none; resize: none;
             -webkit-appearance: none; -webkit-text-fill-color: var(--main); opacity: 1 !important;
         }
         textarea::placeholder { color: #bbb; -webkit-text-fill-color: #bbb; }
@@ -44,12 +45,12 @@
             align-items: center; justify-content: center; z-index: 2;
         }
 
-        .controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 5px; }
-        .controls button { height: 54px; }
+        .main-controls { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 12px; }
+        .main-controls button { height: 50px; font-size: 0.8rem; }
+        .reset-btn { background: var(--accent) !important; color: var(--main) !important; }
 
-        .custom-row { grid-column: span 4; display: flex; gap: 10px; margin-top: 5px; align-items: stretch; height: 54px; }
-        
-        .input-wrapper { position: relative; flex: 2.5; display: flex; align-items: center; }
+        .custom-row { display: flex; gap: 8px; height: 54px; }
+        .input-wrapper { position: relative; flex: 2; display: flex; align-items: center; }
         input[type="number"] {
             width: 100%; height: 100%; background: var(--input-bg); border: 2px solid var(--accent); border-radius: var(--radius);
             padding: 0 40px 0 15px; font-size: 1.1rem; text-align: center; outline: none; font-weight: 900;
@@ -67,7 +68,7 @@
         button:active { transform: scale(0.96); }
         .go-btn { flex: 1; font-size: 1.1rem; }
 
-        .footer-btns { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 25px 0; margin-top: auto; }
+        .footer-btns { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 30px 0; margin-top: auto; }
         .kofi-btn, .home-btn { 
             display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 320px; 
             padding: 16px; border-radius: var(--radius); font-weight: 900; font-size: 0.9rem; text-decoration: none; border: none; 
@@ -75,7 +76,7 @@
         .kofi-btn { background: var(--main); color: #fff; -webkit-text-fill-color: #fff; }
         .home-btn { background: var(--accent); color: var(--main); }
 
-        footer { padding-bottom: 30px; text-align: center; font-size: 0.7rem; color: #bbb; line-height: 1.6; font-weight: 600; }
+        footer { padding-bottom: 20px; text-align: center; font-size: 0.7rem; color: #bbb; line-height: 1.6; font-weight: 600; }
         footer a { color: inherit; text-decoration: underline; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
@@ -90,26 +91,27 @@
         <h1>Recipe Multiplier</h1>
         <a href="https://afrorakda.github.io/" class="hub-link">🏠 Hub</a>
     </header>
-    <p class="subtitle">Scale your portions instantly.</p>
+    <p class="subtitle">Scale portions with ironclad logic.</p>
 
     <div class="input-area">
         <textarea id="recipeInput" placeholder="Paste recipe here..." oninput="handleInput()"></textarea>
         <button id="clrRecipe" class="clr-btn" onclick="clearRecipe()">×</button>
     </div>
 
-    <div class="controls">
+    <div class="main-controls">
+        <button class="reset-btn" onclick="resetToBase()">x1</button>
         <button onclick="multiply(0.5)">x0.5</button>
         <button onclick="multiply(2)">x2</button>
         <button onclick="multiply(3)">x3</button>
         <button onclick="multiply(4)">x4</button>
-        
-        <div class="custom-row">
-            <div class="input-wrapper">
-                <input type="number" id="customInput" placeholder="1.5" step="0.1" inputmode="decimal" oninput="toggleCustomClr()">
-                <span id="clrCustom" class="inner-clear" onclick="clearCustom()">×</span>
-            </div>
-            <button class="go-btn" onclick="multiply(document.getElementById('customInput').value)">Go</button>
+    </div>
+    
+    <div class="custom-row">
+        <div class="input-wrapper">
+            <input type="number" id="customInput" placeholder="Custom" step="0.1" inputmode="decimal" oninput="toggleCustomClr()">
+            <span id="clrCustom" class="inner-clear" onclick="clearCustom()">×</span>
         </div>
+        <button class="go-btn" onclick="multiply(document.getElementById('customInput').value)">Go</button>
     </div>
 </div>
 
@@ -136,21 +138,26 @@
 </div>
 
 <script>
-    let originalText = "";
+    let baseRecipe = "";
 
     function handleInput() {
         const area = document.getElementById('recipeInput');
         const clr = document.getElementById('clrRecipe');
-        originalText = area.value;
-        clr.style.display = originalText ? "flex" : "none";
+        baseRecipe = area.value;
+        clr.style.display = baseRecipe ? "flex" : "none";
     }
 
     function clearRecipe() {
         const area = document.getElementById('recipeInput');
         area.value = "";
-        originalText = "";
+        baseRecipe = "";
         handleInput();
         area.focus();
+    }
+
+    function resetToBase() {
+        if (!baseRecipe) return;
+        document.getElementById('recipeInput').value = baseRecipe;
     }
 
     function toggleCustomClr() {
@@ -165,25 +172,29 @@
 
     function multiply(ratio) {
         const r = parseFloat(ratio);
-        if (isNaN(r) || r <= 0) return;
+        if (isNaN(r) || r <= 0 || !baseRecipe) return;
         
-        let textToProcess = document.getElementById('recipeInput').value;
-        if (!textToProcess) return;
-
-        // 1. 分数の分子のみ計算
-        let result = textToProcess.replace(/(\d+(\.\d+)?)\/(\d+)/g, function(match, p1, p2, p3) {
+        // ターゲットにする単位のホワイトリスト
+        const units = "(g|ml|個|片|枚|カップ|cup|tsp|tbsp|大さじ|小さじ|束|本|切れ|玉|缶|袋|合)";
+        
+        // 1. 分数の分子のみ計算（単位ターゲット）
+        let result = baseRecipe.replace(new RegExp("(\\d+(\\.\\d+)?)\\/(\\d+)(?=\\s*" + units + ")", "gi"), function(match, p1, p2, p3) {
             const num = parseFloat(p1) * r;
-            return Math.round(num * 100) / 100 + "/" + p3;
+            return formatNum(num) + "/" + p3;
         });
         
-        // 2. 単位直前の数値計算（分母を避ける）
-        result = result.replace(/(?<!\/)\b(\d+(\.\d+)?)(?![0-9.\/])/g, function(match) {
+        // 2. 単位直前の数値計算（分母を避け、ホワイトリストの単位が続く場合のみ）
+        result = result.replace(new RegExp("(?<!\\/)\\b(\\d+(\\.\\d+)?)(?=\\s*" + units + ")", "gi"), function(match) {
             const num = parseFloat(match);
-            return Math.round(num * r * 100) / 100;
+            return formatNum(num * r);
         });
         
         document.getElementById('recipeInput').value = result;
-        handleInput();
+    }
+
+    function formatNum(num) {
+        // 小数点第2位まで。整数の場合はそのまま。
+        return Math.round(num * 100) / 100;
     }
 
     // Modal
@@ -191,7 +202,7 @@
     document.getElementById('closeModal').onclick = () => document.getElementById('modal').style.display = 'none';
     window.onclick = (e) => { if (e.target == document.getElementById('modal')) document.getElementById('modal').style.display = 'none'; };
 
-    // Footer補助ロジック
+    // Footer
     async function loadFooter() {
         try {
             const res = await fetch('footer.json');

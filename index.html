@@ -28,15 +28,17 @@
             text-decoration: none; font-size: 0.8rem; font-weight: 800; color: var(--main);
             background: var(--accent); padding: 8px 14px; border-radius: 12px;
         }
-        .subtitle { font-size: 0.85rem; color: #999; font-weight: 700; margin-bottom: 25px; text-align: left; }
+        .subtitle { font-size: 0.85rem; color: #999; font-weight: 700; margin-bottom: 20px; text-align: left; }
 
-        .input-area { position: relative; width: 100%; margin-bottom: 20px; }
+        .input-area { position: relative; width: 100%; margin-bottom: 12px; }
         textarea {
-            width: 100%; height: 260px; background: var(--input-bg); border: 2px solid var(--accent); border-radius: var(--radius);
-            padding: 15px 45px 15px 15px; font-size: 1rem; font-weight: 700; line-height: 1.6; color: var(--main); outline: none; resize: none;
+            width: 100%; height: 280px; background: var(--input-bg); border: 2px solid var(--accent); border-radius: var(--radius);
+            padding: 15px 45px 15px 15px; font-size: 1.05rem; font-weight: 700; line-height: 1.6; color: var(--main); outline: none; resize: none;
             -webkit-appearance: none; -webkit-text-fill-color: var(--main); opacity: 1 !important;
+            transition: background-color 0.4s ease;
         }
-        textarea::placeholder { color: #bbb; -webkit-text-fill-color: #bbb; }
+        textarea::placeholder { color: #bbb; -webkit-text-fill-color: #bbb; font-weight: 700; }
+        .flash { background-color: #d0d0d0 !important; }
 
         .clr-btn {
             position: absolute; right: 12px; top: 12px; width: 28px; height: 28px;
@@ -45,15 +47,15 @@
             align-items: center; justify-content: center; z-index: 2;
         }
 
-        .main-controls { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 12px; }
-        .main-controls button { height: 50px; font-size: 0.8rem; }
+        .main-controls { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1.2fr; gap: 8px; margin-bottom: 8px; }
+        .main-controls button { height: 50px; font-size: 0.85rem; }
         .reset-btn { background: var(--accent) !important; color: var(--main) !important; }
 
-        .custom-row { display: flex; gap: 8px; height: 54px; }
-        .input-wrapper { position: relative; flex: 2; display: flex; align-items: center; }
+        .custom-row { display: flex; gap: 8px; height: 58px; }
+        .input-wrapper { position: relative; flex: 1; display: flex; align-items: center; }
         input[type="number"] {
             width: 100%; height: 100%; background: var(--input-bg); border: 2px solid var(--accent); border-radius: var(--radius);
-            padding: 0 40px 0 15px; font-size: 1.1rem; text-align: center; outline: none; font-weight: 900;
+            padding: 0 40px 0 15px; font-size: 1.2rem; text-align: center; outline: none; font-weight: 900;
             -webkit-appearance: none; -webkit-text-fill-color: var(--main); opacity: 1 !important;
         }
         input::placeholder { color: #bbb; -webkit-text-fill-color: #bbb; }
@@ -66,7 +68,7 @@
 
         button { background: var(--main); color: #fff; border: none; border-radius: var(--radius); font-size: 0.9rem; font-weight: 900; cursor: pointer; -webkit-appearance: none; }
         button:active { transform: scale(0.96); }
-        .go-btn { flex: 1; font-size: 1.1rem; }
+        .go-btn { flex: 1.2; font-size: 1.2rem; }
 
         .footer-btns { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 30px 0; margin-top: auto; }
         .kofi-btn, .home-btn { 
@@ -91,7 +93,7 @@
         <h1>Recipe Multiplier</h1>
         <a href="https://afrorakda.github.io/" class="hub-link">🏠 Hub</a>
     </header>
-    <p class="subtitle">Scale portions with ironclad logic.</p>
+    <p class="subtitle">Ironclad portion scaling.</p>
 
     <div class="input-area">
         <textarea id="recipeInput" placeholder="Paste recipe here..." oninput="handleInput()"></textarea>
@@ -157,7 +159,9 @@
 
     function resetToBase() {
         if (!baseRecipe) return;
-        document.getElementById('recipeInput').value = baseRecipe;
+        const area = document.getElementById('recipeInput');
+        area.value = baseRecipe;
+        flashArea();
     }
 
     function toggleCustomClr() {
@@ -170,34 +174,38 @@
         toggleCustomClr();
     }
 
+    function flashArea() {
+        const area = document.getElementById('recipeInput');
+        area.classList.add('flash');
+        setTimeout(() => area.classList.remove('flash'), 400);
+    }
+
     function multiply(ratio) {
         const r = parseFloat(ratio);
         if (isNaN(r) || r <= 0 || !baseRecipe) return;
         
-        // ターゲットにする単位のホワイトリスト
-        const units = "(g|ml|個|片|枚|カップ|cup|tsp|tbsp|大さじ|小さじ|束|本|切れ|玉|缶|袋|合)";
+        // ターゲット単位：日本語・英語・分数をカバー
+        const units = "(g|ml|個|片|枚|カップ|cup|tsp|tbsp|大さじ|小さじ|束|本|切れ|玉|缶|袋|合|丁|パフ|つまみ)";
         
         // 1. 分数の分子のみ計算（単位ターゲット）
         let result = baseRecipe.replace(new RegExp("(\\d+(\\.\\d+)?)\\/(\\d+)(?=\\s*" + units + ")", "gi"), function(match, p1, p2, p3) {
-            const num = parseFloat(p1) * r;
-            return formatNum(num) + "/" + p3;
+            return formatNum(parseFloat(p1) * r) + "/" + p3;
         });
         
-        // 2. 単位直前の数値計算（分母を避け、ホワイトリストの単位が続く場合のみ）
+        // 2. 単位直前の数値（分母回避・ホワイトリスト適合時のみ）
         result = result.replace(new RegExp("(?<!\\/)\\b(\\d+(\\.\\d+)?)(?=\\s*" + units + ")", "gi"), function(match) {
-            const num = parseFloat(match);
-            return formatNum(num * r);
+            return formatNum(parseFloat(match) * r);
         });
         
         document.getElementById('recipeInput').value = result;
+        flashArea();
     }
 
     function formatNum(num) {
-        // 小数点第2位まで。整数の場合はそのまま。
         return Math.round(num * 100) / 100;
     }
 
-    // Modal
+    // Modal logic
     document.getElementById('homeBtn').onclick = () => document.getElementById('modal').style.display = 'flex';
     document.getElementById('closeModal').onclick = () => document.getElementById('modal').style.display = 'none';
     window.onclick = (e) => { if (e.target == document.getElementById('modal')) document.getElementById('modal').style.display = 'none'; };

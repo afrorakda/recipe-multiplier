@@ -30,7 +30,6 @@
         }
         .subtitle { font-size: 0.85rem; color: #999; font-weight: 700; margin-bottom: 20px; }
 
-        /* Highlight Logic Layer */
         .editor-wrapper { position: relative; width: 100%; margin-bottom: 12px; font-size: 1.05rem; line-height: 1.6; }
         .backdrop {
             position: absolute; top: 0; left: 0; width: 100%; height: 280px;
@@ -141,7 +140,7 @@
         const area = document.getElementById('recipeInput');
         baseRecipe = area.value;
         document.getElementById('clrRecipe').style.display = baseRecipe ? "flex" : "none";
-        document.getElementById('backdrop').innerHTML = area.value; // 初期化
+        document.getElementById('backdrop').innerHTML = area.value;
         syncScroll();
     }
 
@@ -169,22 +168,18 @@
         const r = parseFloat(ratio);
         if (isNaN(r) || r <= 0 || !baseRecipe) return;
         
-        const units = "(g|ml|個|片|枚|カップ|cup|tsp|tbsp|大さじ|小さじ|束|本|切れ|玉|缶|袋|合|丁|パフ|つまみ)";
-        let displayHTML = baseRecipe;
-
-        // 正規表現: 単位の前後にある数値をキャプチャ (混合分数含む)
-        // 1. 整数 + 分数 (1 1/2)
+        const units = "(g|ml|個|片|枚|カップ|cup|tsp|tbsp|大さじ|小さじ|束|本|切れ|玉|缶|袋|合|丁|パフ|つまみ|枚|ヶ|oz|lb)";
+        
+        // 正規表現: \bに頼らず、数字の前後関係で抽出
         const mixedRegex = new RegExp("(\\d+)\\s+(\\d+)\\/(\\d+)(?=\\s*" + units + ")|(?<=" + units + "\\s*)(\\d+)\\s+(\\d+)\\/(\\d+)", "gi");
-        // 2. 単体分数 (1/2)
         const fracRegex = new RegExp("(\\d+)\\/(\\d+)(?=\\s*" + units + ")|(?<=" + units + "\\s*)(\\d+)\\/(\\d+)", "gi");
-        // 3. 通常数値 (1.5)
-        const numRegex = new RegExp("(?<!\\d\\/|\\d\\s)\\b(\\d+(\\.\\d+)?)\\b(?=\\s*" + units + ")|(?<=" + units + "\\s*)\\b(\\d+(\\.\\d+)?)\\b", "gi");
+        // 数値の抽出: 直後に単位が続く、または直前に単位がある数字
+        const numRegex = new RegExp("(\\d+(\\.\\d+)?)(?=\\s*" + units + ")|(?<=" + units + "\\s*)(\\d+(\\.\\d+)?)", "gi");
 
         const calcResult = baseRecipe.replace(mixedRegex, (m) => scaleMixed(m, r))
                                      .replace(fracRegex, (m) => scaleFrac(m, r))
                                      .replace(numRegex, (m) => formatNum(parseFloat(m) * r));
 
-        // ハイライト用HTML生成
         const highlightHTML = baseRecipe.replace(mixedRegex, (m) => `<mark>${scaleMixed(m, r)}</mark>`)
                                         .replace(fracRegex, (m) => `<mark>${scaleFrac(m, r)}</mark>`)
                                         .replace(numRegex, (m) => `<mark>${formatNum(parseFloat(m) * r)}</mark>`);
@@ -192,7 +187,6 @@
         document.getElementById('recipeInput').value = calcResult;
         document.getElementById('backdrop').innerHTML = highlightHTML;
         
-        // 3秒後にハイライト消去
         setTimeout(() => {
             document.getElementById('backdrop').innerHTML = calcResult;
         }, 2000);
